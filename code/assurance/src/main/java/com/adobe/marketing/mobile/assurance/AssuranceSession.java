@@ -22,7 +22,6 @@ import com.adobe.marketing.mobile.services.Log;
 import com.adobe.marketing.mobile.util.StringUtils;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -305,23 +304,10 @@ class AssuranceSession implements AssuranceWebViewSocketHandler {
     }
   }
 
-  private void handleDebugEvent(AssuranceEvent event){
-    if(String.valueOf(event.getPayload().get("type")).equals("cmd")){
-      String argument = String.valueOf(event.getPayload().get("argument"));
-      Log.debug("CMD","CMD/"+argument,new HashMap<String, Object>(){
-        {
-          put("cmd",argument);
-          put("result","json data will be presented");
-        }
-      },"");
-    }
-  }
-  
   @Override
   public void onSocketDataReceived(final AssuranceWebViewSocket socket, final String message) {
     try {
       AssuranceEvent event = new AssuranceEvent(message);
-      handleDebugEvent(event);
 
       // only nonnull events should be queued to the inbound worker thread
       if (event == null) {
