@@ -11,12 +11,17 @@
 
 package com.adobe.marketing.mobile;
 
+
+import androidx.annotation.NonNull;
 import com.adobe.marketing.mobile.assurance.AssuranceExtension;
 import com.adobe.marketing.mobile.services.Log;
+<<<<<<< HEAD
 import com.adobe.marketing.mobile.services.Logging;
 import com.adobe.marketing.mobile.services.ServiceProvider;
 
 import java.util.ArrayList;
+=======
+>>>>>>> main
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,8 +34,14 @@ public class Assurance {
 
     public static final Class<? extends Extension> EXTENSION = AssuranceExtension.class;
     public static final String LOG_TAG = "Assurance";
+<<<<<<< HEAD
     public static final String EXTENSION_VERSION = "2.0.0";
     public static final String EXTENSION_NAME = "com.adobe.assurance";
+=======
+    public static final String EXTENSION_VERSION = "2.0.1";
+    public static final String EXTENSION_NAME = "com.adobe.assurance";
+    public static final String EXTENSION_FRIENDLY_NAME = "Assurance";
+>>>>>>> main
 
     private static final String DEEPLINK_SESSION_ID_KEY = "adb_validation_sessionid";
     private static final String START_SESSION_URL = "startSessionURL";
@@ -44,11 +55,16 @@ public class Assurance {
      *
      * @return A {@link String} representing Assurance extension version
      */
+<<<<<<< HEAD
+=======
+    @NonNull
+>>>>>>> main
     public static String extensionVersion() {
         return EXTENSION_VERSION;
     }
 
     /**
+<<<<<<< HEAD
      * Register Assurance extension with {@code MobileCore}
      * <p>
      * This will allow the extension to send and receive events to and from the {@code MobileCore}.
@@ -67,11 +83,35 @@ public class Assurance {
                                 adbExtensionError.getErrorName()));
             }
         };
+=======
+     * Register Assurance extension with the Mobile SDK. This method should be called only once in
+     * you application class.
+     *
+     * @return true if Assurance extension registration was successfully triggered, false otherwise.
+     * @deprecated as of 2.0.0, use {@link MobileCore#registerExtensions(List, AdobeCallback)} with
+     *     {@link Assurance#EXTENSION} instead.
+     */
+    @Deprecated
+    public static boolean registerExtension() {
+        ExtensionErrorCallback<ExtensionError> errorCallback =
+                new ExtensionErrorCallback<ExtensionError>() {
+                    @Override
+                    public void error(final ExtensionError adbExtensionError) {
+                        Log.error(
+                                LOG_TAG,
+                                LOG_TAG,
+                                String.format(
+                                        "Assurance registration failed with error %s.",
+                                        adbExtensionError.getErrorName()));
+                    }
+                };
+>>>>>>> main
         return MobileCore.registerExtension(AssuranceExtension.class, errorCallback);
     }
 
     /**
      * Starts a Project Assurance session with the provided URL
+<<<<<<< HEAD
      * <p>
      * Calling this method when a session has already been started will result in a no-op.
      * It will attempt to initiate a new Project Assurance session if no session is active.
@@ -196,4 +236,37 @@ public class Assurance {
             }
         });
     }
+=======
+     *
+     * <p>Calling this method when a session has already been started will result in a no-op. It
+     * will attempt to initiate a new Project Assurance session if no session is active.
+     *
+     * @param url a valid Project Assurance deeplink URL to start a session
+     */
+    public static void startSession(@NonNull final String url) {
+        // validate the obtained URL
+        if (url == null || !url.contains(DEEPLINK_SESSION_ID_KEY)) {
+            Log.warning(
+                    LOG_TAG,
+                    LOG_TAG,
+                    String.format(
+                            "Not a valid Assurance deeplink, Ignorning start session API call. URL"
+                                    + " : %s",
+                            url));
+            return;
+        }
+
+        final Map<String, Object> startSessionEventData = new HashMap<>();
+        startSessionEventData.put(START_SESSION_URL, url);
+
+        final Event startSessionEvent =
+                new Event.Builder(
+                                "Assurance Start Session",
+                                EventType.ASSURANCE,
+                                EventSource.REQUEST_CONTENT)
+                        .setEventData(startSessionEventData)
+                        .build();
+        MobileCore.dispatchEvent(startSessionEvent);
+    }
+>>>>>>> main
 }
