@@ -55,17 +55,17 @@ public class Assurance {
     @Deprecated
     public static boolean registerExtension() {
         ExtensionErrorCallback<ExtensionError> errorCallback =
-            new ExtensionErrorCallback<ExtensionError>() {
-                @Override
-                public void error(final ExtensionError adbExtensionError) {
-                    Log.error(
-                        LOG_TAG,
-                        LOG_TAG,
-                        String.format(
-                            "Assurance registration failed with error %s.",
-                            adbExtensionError.getErrorName()));
-                }
-            };
+                new ExtensionErrorCallback<ExtensionError>() {
+                    @Override
+                    public void error(final ExtensionError adbExtensionError) {
+                        Log.error(
+                                LOG_TAG,
+                                LOG_TAG,
+                                String.format(
+                                        "Assurance registration failed with error %s.",
+                                        adbExtensionError.getErrorName()));
+                    }
+                };
         return MobileCore.registerExtension(AssuranceExtension.class, errorCallback);
     }
 
@@ -81,12 +81,12 @@ public class Assurance {
         // validate the obtained URL
         if (url == null || !url.contains(DEEPLINK_SESSION_ID_KEY)) {
             Log.warning(
-                LOG_TAG,
-                LOG_TAG,
-                String.format(
-                    "Not a valid Assurance deeplink, Ignorning start session API call. URL"
-                        + " : %s",
-                    url));
+                    LOG_TAG,
+                    LOG_TAG,
+                    String.format(
+                            "Not a valid Assurance deeplink, Ignorning start session API call. URL"
+                                    + " : %s",
+                            url));
             return;
         }
 
@@ -94,12 +94,12 @@ public class Assurance {
         startSessionEventData.put(START_SESSION_URL, url);
 
         final Event startSessionEvent =
-            new Event.Builder(
-                "Assurance Start Session",
-                EventType.ASSURANCE,
-                EventSource.REQUEST_CONTENT)
-                .setEventData(startSessionEventData)
-                .build();
+                new Event.Builder(
+                                "Assurance Start Session",
+                                EventType.ASSURANCE,
+                                EventSource.REQUEST_CONTENT)
+                        .setEventData(startSessionEventData)
+                        .build();
         MobileCore.dispatchEvent(startSessionEvent);
     }
 }
