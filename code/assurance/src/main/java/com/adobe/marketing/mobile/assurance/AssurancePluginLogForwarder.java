@@ -26,9 +26,9 @@ import java.util.regex.Pattern;
 class AssurancePluginLogForwarder implements AssurancePlugin {
     private static final String LOG_TAG = "AssurancePluginLogForwarder";
     private static final Pattern HEADER_MESSAGE =
-        Pattern.compile(
-            "^\\[ \\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d.\\d\\d\\d {1,}\\d+: {0,}\\d+"
-                + " [VDIWEAF]/[^ ]+ {1,}]$");
+            Pattern.compile(
+                    "^\\[ \\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d.\\d\\d\\d {1,}\\d+: {0,}\\d+"
+                            + " [VDIWEAF]/[^ ]+ {1,}]$");
 
     private volatile boolean backgroundThreadRunning = false;
     private boolean logEnabled = false;
@@ -59,9 +59,9 @@ class AssurancePluginLogForwarder implements AssurancePlugin {
 
         if (AssuranceUtil.isNullOrEmpty(logForwardingDetails)) {
             Log.warning(
-                Assurance.LOG_TAG,
-                LOG_TAG,
-                "Invalid details in payload. Ignoring to enable/disable logs.");
+                    Assurance.LOG_TAG,
+                    LOG_TAG,
+                    "Invalid details in payload. Ignoring to enable/disable logs.");
             return;
         }
 
@@ -69,9 +69,9 @@ class AssurancePluginLogForwarder implements AssurancePlugin {
 
         if (!(enabled instanceof Boolean)) {
             Log.warning(
-                Assurance.LOG_TAG,
-                LOG_TAG,
-                "Unable to forward the log, logForwardingValue is invalid");
+                    Assurance.LOG_TAG,
+                    LOG_TAG,
+                    "Unable to forward the log, logForwardingValue is invalid");
             return;
         }
 
@@ -81,8 +81,8 @@ class AssurancePluginLogForwarder implements AssurancePlugin {
         if (logEnabled) {
             if (session != null) {
                 session.logLocalUI(
-                    AssuranceConstants.UILogColorVisibility.HIGH,
-                    "Received Assurance command to start forwarding logs");
+                        AssuranceConstants.UILogColorVisibility.HIGH,
+                        "Received Assurance command to start forwarding logs");
             }
 
             if (!backgroundThreadRunning) {
@@ -93,8 +93,8 @@ class AssurancePluginLogForwarder implements AssurancePlugin {
         } else {
             if (session != null) {
                 session.logLocalUI(
-                    AssuranceConstants.UILogColorVisibility.HIGH,
-                    "Received Assurance command to stop forwarding logs");
+                        AssuranceConstants.UILogColorVisibility.HIGH,
+                        "Received Assurance command to stop forwarding logs");
             }
         }
     }
@@ -125,15 +125,15 @@ class AssurancePluginLogForwarder implements AssurancePlugin {
         public void run() {
             try {
                 final Process procRemoveUnecessaryLogs =
-                    new ProcessBuilder().command("logcat", "-P", "").start();
+                        new ProcessBuilder().command("logcat", "-P", "").start();
                 final String processIdCommand =
-                    String.format("--pid=%s", android.os.Process.myPid());
+                        String.format("--pid=%s", android.os.Process.myPid());
                 final Process proc =
-                    new ProcessBuilder()
-                        .command("logcat", processIdCommand, "-bmain", "-vlong")
-                        .start();
+                        new ProcessBuilder()
+                                .command("logcat", processIdCommand, "-bmain", "-vlong")
+                                .start();
                 final BufferedReader reader =
-                    new BufferedReader(new InputStreamReader(proc.getInputStream()));
+                        new BufferedReader(new InputStreamReader(proc.getInputStream()));
                 final StringBuilder logLines = new StringBuilder();
                 boolean isFirstLog = true;
 
@@ -160,9 +160,9 @@ class AssurancePluginLogForwarder implements AssurancePlugin {
                             final Map<String, Object> eventPayload = new HashMap<>();
                             eventPayload.put("logline", logLines.toString());
                             final AssuranceEvent logEvent =
-                                new AssuranceEvent(
-                                    AssuranceConstants.AssuranceEventType.LOG,
-                                    eventPayload);
+                                    new AssuranceEvent(
+                                            AssuranceConstants.AssuranceEventType.LOG,
+                                            eventPayload);
                             final AssuranceSession session = parentSession.get();
 
                             if (session != null) {
@@ -177,11 +177,11 @@ class AssurancePluginLogForwarder implements AssurancePlugin {
                         }
                     } catch (final Exception ex) {
                         Log.error(
-                            Assurance.LOG_TAG,
-                            LOG_TAG,
-                            String.format(
-                                "Log forwarding error reading line: %s",
-                                ex.getLocalizedMessage()));
+                                Assurance.LOG_TAG,
+                                LOG_TAG,
+                                String.format(
+                                        "Log forwarding error reading line: %s",
+                                        ex.getLocalizedMessage()));
                     }
                 }
 
@@ -190,11 +190,11 @@ class AssurancePluginLogForwarder implements AssurancePlugin {
             } catch (final Exception ex) {
                 // handle exception
                 Log.error(
-                    Assurance.LOG_TAG,
-                    LOG_TAG,
-                    String.format(
-                        "Log forwarding error while sending logs: %s"
-                            + ex.getLocalizedMessage()));
+                        Assurance.LOG_TAG,
+                        LOG_TAG,
+                        String.format(
+                                "Log forwarding error while sending logs: %s"
+                                        + ex.getLocalizedMessage()));
             }
 
             backgroundThreadRunning = false;
