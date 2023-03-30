@@ -1,5 +1,6 @@
-package com.adobe.marketing.mobile;
+package com.adobe.marketing.mobile.assurance;
 
+import com.adobe.marketing.mobile.LogDataHandler;
 import com.adobe.marketing.mobile.services.Logging;
 import com.adobe.marketing.mobile.services.ServiceProvider;
 import java.util.ArrayList;
@@ -10,16 +11,40 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class Debugger {
 
-  private static AtomicReference<LogDataHandler> HANDLER = new AtomicReference<>(null);
+  private static final AtomicReference<LogDataHandler> HANDLER = new AtomicReference<>(null);
 
-  public static void registerLogForwardingHandler(LogDataHandler handler) {
+  static void registerLogForwardingHandler(LogDataHandler handler) {
     HANDLER.set(handler);
+  }
+
+  private static final List<Map<String, Object>> cachedLogs = new ArrayList<>();
+
+  static void forwardLogData(Map<String, Object> data) {
+    if (data.get("tag").toString().contains("Assurance")) {
+      return;
+    } else {
+//                    String extensionName = data.get("tag").toString().split("/")[0];
+      data.put("extension", Thread.currentThread().getName());
+      data.put("timestamp", System.currentTimeMillis());
+      data.put("threadName", Thread.currentThread().getName());
+    }
+    LogDataHandler handler = HANDLER.get();
+    if (handler != null) {
+      if (!cachedLogs.isEmpty()) {
+        for (Map<String, Object> item : cachedLogs) {
+          handler.execute(item);
+        }
+        cachedLogs.clear();
+      }
+      handler.execute(data);
+    } else {
+      cachedLogs.add(data);
+    }
   }
 
   public static void queueLogsWithMetaData() {
     ServiceProvider.getInstance().setLoggingService(new Logging() {
       private static final String TAG = "AdobeExperienceSDK";
-      private final List<Map<String, Object>> cachedLogs = new ArrayList<>();
 
       @Override
       public void trace(final String tag, final String message) {
@@ -84,29 +109,6 @@ public class Debugger {
         data.put("level", "error");
         data.put("metaData", metaData);
         forwardLogData(data);
-      }
-
-      private void forwardLogData(Map<String, Object> data) {
-        if (data.get("tag").toString().contains("Assurance")) {
-          return;
-        } else {
-//                    String extensionName = data.get("tag").toString().split("/")[0];
-          data.put("extension", Thread.currentThread().getName());
-          data.put("timestamp", System.currentTimeMillis());
-          data.put("threadName", Thread.currentThread().getName());
-        }
-        LogDataHandler handler = HANDLER.get();
-        if (handler != null) {
-          if (!cachedLogs.isEmpty()) {
-            for (Map<String, Object> item : cachedLogs) {
-              handler.execute(item);
-            }
-            cachedLogs.clear();
-          }
-          handler.execute(data);
-        } else {
-          cachedLogs.add(data);
-        }
       }
     });
   }
