@@ -12,6 +12,7 @@
 package com.adobe.marketing.mobile.assurance.internal.ui
 
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -53,13 +54,25 @@ class AssuranceActivity : ComponentActivity() {
                         ) {
 
                             // Locks the Assurance screen to always be in portrait mode.
-                            val orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                            DisposableEffect(orientation) {
-                                val originalOrientation = requestedOrientation
-                                requestedOrientation = orientation
-                                onDispose {
-                                    // restore original orientation when view disappears
-                                    requestedOrientation = originalOrientation
+//                            val orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+//                            DisposableEffect(orientation) {
+//                                val originalOrientation = requestedOrientation
+//                                requestedOrientation = orientation
+//                                onDispose {
+//                                    // restore original orientation when view disappears
+//                                    requestedOrientation = originalOrientation
+//                                }
+//                            }
+                            val isAndroidTV = packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+                            if (!isAndroidTV) {
+                                val orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                                DisposableEffect(orientation) {
+                                    val originalOrientation = requestedOrientation
+                                    requestedOrientation = orientation
+                                    onDispose {
+                                        // restore original orientation when view disappears
+                                        requestedOrientation = originalOrientation
+                                    }
                                 }
                             }
 

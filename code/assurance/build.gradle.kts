@@ -29,9 +29,27 @@ aepLibrary {
     }
 }
 
+android {
+
+    sourceSets {
+        getByName("main").java.srcDirs(
+            "src/main/java",
+            "../../core/code/core/src/main/java",
+            "../../core/code/core/src/phone/java"
+        )
+    }
+}
+
 dependencies {
     // Stop using SNAPSHOT after Core release.
-    implementation("com.adobe.marketing.mobile:core:$mavenCoreVersion")
+//    implementation("com.adobe.marketing.mobile:core:$mavenCoreVersion")
+    implementation("androidx.lifecycle:lifecycle-process:2.0.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
+    implementation("androidx.compose.runtime:runtime:1.4.3")
+    implementation("androidx.compose.material:material:1.4.3")
+    implementation("androidx.compose.animation:animation:1.4.3")
+    implementation("androidx.activity:activity-compose:1.5.0")
+
     // Compose Navigation
     implementation("androidx.navigation:navigation-compose:$navigationComposeVersion")
     // Compose ViewModel
