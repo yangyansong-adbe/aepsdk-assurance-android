@@ -11,7 +11,6 @@
 
 package com.adobe.assurance_tvos_testapp.ui.views
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +23,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,17 +38,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.adobe.assurance_tvos_testapp.AssuranceTestAppConstants
+import com.adobe.assurance_tvos_testapp.R
 import com.adobe.assurance_tvos_testapp.ui.viewmodel.AssuranceTestAppViewModel
 import com.adobe.marketing.mobile.Assurance
 import com.adobe.marketing.mobile.MobileCore
-import com.adobe.assurance_tvos_testapp.R
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.input.key.type
+
+private var assuranceIsConnected = false
 
 @Composable
 internal fun AssuranceScreen(
@@ -84,7 +82,7 @@ internal fun AssuranceScreen(
                     .padding(vertical = 16.dp, horizontal = 8.dp)
                     .align(Alignment.CenterHorizontally)
             ) {
-                AssuranceConnectionInput()
+                AssuranceConnectionInput(scope)
             }
 
             Row(
@@ -115,16 +113,31 @@ private fun AssuranceVersionLabel(version: String) {
 }
 
 @Composable
-private fun AssuranceConnectionInput() {
+private fun AssuranceConnectionInput(scope: CoroutineScope) {
+    var connected by remember { mutableStateOf(assuranceIsConnected) }
     Column {
-        Button(
-            onClick = { Assurance.startSession() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .testTag(AssuranceTestAppConstants.TEST_TAG_QUICK_CONNECT_BUTTON)
-        ) {
-            Text(text = stringResource(id = R.string.assurance_quick_connect_button_name))
-        }
+        Switch(
+            checked = connected,
+            onCheckedChange = { newState ->
+                connected = newState
+                assuranceIsConnected = newState
+                if (newState) {
+                    Assurance.startSession()
+                } else {
+                    Assurance.endSession()
+                }
+
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+//        Button(
+//            onClick = { Assurance.startSession() },
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .testTag(AssuranceTestAppConstants.TEST_TAG_QUICK_CONNECT_BUTTON)
+//        ) {
+//            Text(text = stringResource(id = R.string.assurance_quick_connect_button_name))
+//        }
     }
 }
 
@@ -148,8 +161,9 @@ private fun AppIdConfiguration() {
 
         Button(
             onClick = {
-                println("###---"+appId+"---");
-                MobileCore.configureWithAppID(appId) },
+                println("###---" + appId + "---");
+                MobileCore.configureWithAppID(appId)
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag(AssuranceTestAppConstants.TEST_TAG_CONFIGURE_WITH_APP_ID_BUTTON)

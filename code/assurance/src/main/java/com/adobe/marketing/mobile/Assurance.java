@@ -29,6 +29,7 @@ public class Assurance {
     private static final String DEEPLINK_SESSION_ID_KEY = "adb_validation_sessionid";
     private static final String START_SESSION_URL = "startSessionURL";
     private static final String IS_QUICK_CONNECT = "quickConnect";
+    private static final String END_SESSION = "endSession";
 
     // ========================================================================================
     // Public APIs
@@ -94,4 +95,23 @@ public class Assurance {
                         .build();
         MobileCore.dispatchEvent(startSessionEvent);
     }
+
+    // TODO:
+//    public static void startSession(corner) {
+
+    public static void endSession(){
+        final Event startSessionEvent =
+                new Event.Builder(
+                        "Assurance End Session",
+                        EventType.ASSURANCE,
+                        EventSource.REQUEST_CONTENT)
+                        .setEventData(Collections.singletonMap(END_SESSION, true))
+                        .build();
+        MobileCore.dispatchEvent(startSessionEvent);
+    }
+    public static KeyEventMonitor createKeyEventMonitor(final KeyType[] keyCombination){
+        return new KeyEventMonitor(keyCombination);
+    }
 }
+
+

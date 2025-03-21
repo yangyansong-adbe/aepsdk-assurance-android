@@ -11,8 +11,10 @@
 
 package com.adobe.assurance_tvos_testapp
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -35,21 +37,35 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.compose.rememberNavController
+import com.adobe.assurance_tvos_testapp.ui.navigation.AppNavigation
+import com.adobe.assurance_tvos_testapp.ui.navigation.NavRoutes
 import com.adobe.assurance_tvos_testapp.ui.theme.AepsdkassuranceandroidTheme
 import com.adobe.assurance_tvos_testapp.ui.views.DrawerLayout
-import com.adobe.assurance_tvos_testapp.ui.navigation.NavRoutes
-import com.adobe.assurance_tvos_testapp.ui.navigation.AppNavigation
+import com.adobe.marketing.mobile.Assurance
+import com.adobe.marketing.mobile.KeyEventMonitor
+import com.adobe.marketing.mobile.KeyType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 class AssuranceTestAppActivity : ComponentActivity() {
+
+    private val keyEventMonitor: KeyEventMonitor = Assurance.createKeyEventMonitor(arrayOf(
+        KeyType.UP,
+        KeyType.DOWN,
+        KeyType.DOWN,
+        KeyType.RIGHT
+    ))
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        Log.d("xx", "$event")
+        event?.let { keyEventMonitor.keyEventDetected(it) }
+        return super.onKeyDown(keyCode, event)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -65,12 +81,8 @@ class AssuranceTestAppActivity : ComponentActivity() {
                 )
 
                 Surface(
-                    modifier = Modifier.
-                    fillMaxSize()
-                        .onPreviewKeyEvent { keyEvent ->
-                            Log.d("xxx","${keyEvent.type}: ${keyEvent.key}")
-                            false
-                        },
+                    modifier = Modifier
+                        .fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
                     MenuScaffold(

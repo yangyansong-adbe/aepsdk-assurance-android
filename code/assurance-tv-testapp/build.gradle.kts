@@ -76,6 +76,7 @@ dependencies {
 
     // AEP SDK dependencies
     implementation(project(":assurance"))
+    implementation("androidx.compose.material3:material3-android:1.3.1")
 //    implementation("com.adobe.marketing.mobile:core:3.0.0")
 //    implementation("com.adobe.marketing.mobile:signal:3.0.0")
 //    implementation("com.adobe.marketing.mobile:messaging:3.3.0-beta2-SNAPSHOT")
